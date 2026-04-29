@@ -1,444 +1,549 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, ChevronRight, RotateCcw, AlertCircle } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cuidados Paliativos - Parte 1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animaciones personalizadas */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+        
+        /* Ocultar elementos */
+        .hidden-view {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col">
 
-const testQuestions = [
-  {
-    id: 1,
-    text: "¿Cuál es el objetivo de la valoración integral del enfermo en fase terminal?",
-    options: [
-      "a. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
-      "b. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
-      "c. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
-      "d. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada."
-    ],
-    answer: 0 // Opciones idénticas en el texto original, asignamos la A por defecto.
-  },
-  {
-    id: 2,
-    text: "¿Cuáles son los objetivos de la enfermería paliativa?",
-    options: [
-      "a. Conseguir el mínimo confort y bienestar del paciente, Evitar el sufrimiento y Lograr una muerte digna",
-      "b. Conseguir el máximo confort y bienestar del paciente, Evitar el sufrimiento solo de la familia y Lograr una muerte digna",
-      "c. Conseguir el máximo confort y bienestar del paciente, Evitar el sufrimiento y Lograr una muerte digna",
-      "d. Conseguir el máximo confort y bienestar de la familia, Evitar el sufrimiento y Lograr una muerte digna"
-    ],
-    answer: 2
-  },
-  {
-    id: 3,
-    text: "Marca la verdadera",
-    options: [
-      "a. El uso del mismo escalón reporta ningún beneficio",
-      "b. Recomendado el 2º y 3º escalón",
-      "c. El 2º escalón siempre se puede combinar con los otros",
-      "d. morfina en rescate con parches de fentanilo"
-    ],
-    answer: 3
-  },
-  {
-    id: 4,
-    text: "¿Cuál es una Características físicas de la agonía?",
-    options: [
-      "a. Orientación",
-      "b. Trastornos mentales",
-      "c. Trastornos respiratorios",
-      "d. No tiene miedo"
-    ],
-    answer: 2
-  },
-  {
-    id: 5,
-    text: "quien dijo: “Dos entes vivos difieren en cuanto que la vida de ellos es distinta y como vivir no es lo mismo para los dos, tampoco morir significa lo mismo”:",
-    options: [
-      "a. Miguel de Unamuno (1912)",
-      "b. Pérez Cuesta y Nicuesa (1999)",
-      "c. L. Mizer",
-      "d. Ramón Bayés"
-    ],
-    answer: 0
-  },
-  {
-    id: 6,
-    text: "característica de la muerte inminente",
-    options: [
-      "a. Pupilas dilatadas y fijas, Incapacidad para beber, Pérdida de reflejos, Pulso rápido y débil",
-      "b. Descenso de la presión craneal, Respiración de Cheyne-Stokes (distrés respiratorio), Respiración ruidosas (estertores de la muerte)",
-      "c. Pérdida de reflejos, Pulso lento y débil, Descenso de la presión arterial, Respiración de Cheyne-Stokes",
-      "d. Pupilas dilatadas y fijas, Incapacidad para moverse"
-    ],
-    answer: 0
-  },
-  {
-    id: 7,
-    text: "qué se debe conocer en el duelo:",
-    options: [
-      "a. El grado de información del familiar",
-      "b. Su estado emocional",
-      "c. Apoyo de su familia",
-      "d. b y c"
-    ],
-    answer: 3
-  },
-  {
-    id: 8,
-    text: "quien dijo “El tiempo que le queda al paciente es un tiempo de vida y no una espera angustiosa ante la muerte”",
-    options: [
-      "a. Miguel de Unamuno (1912)",
-      "b. Pérez Cuesta y Nicuesa (1999)",
-      "c. L. Mizer",
-      "d. Ramón Bayés"
-    ],
-    answer: 1
-  },
-  {
-    id: 9,
-    text: "cuál es falsa:",
-    options: [
-      "a. No apoyar al cuidador (preocupaciones)",
-      "b. Implementar el cuidado domiciliario",
-      "c. Dar apoyo a la familia después de la muerte",
-      "d. Ofrecer asesoría y soporte ético y legal"
-    ],
-    answer: 0
-  },
-  {
-    id: 10,
-    text: "¿Cuál no es un elemento básico de los cuidados paliativos?",
-    options: [
-      "a. Una buena comunicación",
-      "b. Un control adecuado de sus síntomas",
-      "c. Empleo de diversas medidas para aliviar o atenuar el sufrimiento",
-      "d. No dar apoyo a la familia antes de la muerte y durante el proceso del duelo"
-    ],
-    answer: 3
-  },
-  {
-    id: 11,
-    text: "qué tiene que hacer una enfermera según Nightingale",
-    options: [
-      "a. resolver diversas circunstancia de la vida del enfermo",
-      "b. buscar los problemas",
-      "c. aportar conocimiento y habilidades técnicas cómo suplemento de otros profesionales",
-      "d. cuidar al enfermo y no dejarlo morir"
-    ],
-    answer: 0
-  },
-  {
-    id: 12,
-    text: "cuál no es una característica de la muerte inminente",
-    options: [
-      "a. Pupilas dilatadas y fijas Incapacidad para moverse Pérdida de reflejos Pulso rápido y débil",
-      "b. Descenso de la presión arterial Respiración de Cheyne-Stokes (distrés respiratorio) Respiración ruidosas (crepitante de la muerte)",
-      "c. Pérdida de reflejos Pulso rápido y débil Descenso de la presión arterial Respiración de Cheyne-Stokes",
-      "d. Pupilas dilatadas y fijas Incapacidad para moverse"
-    ],
-    answer: 1 // Crepitantes vs estertores
-  },
-  {
-    id: 13,
-    text: "cuál de las siguientes es una meta principal de bases de los cuidados paliativos",
-    options: [
-      "a. El dolor y la prevención del sufrimiento",
-      "b. La identificación precoz y tto. impecables del dolor y de otros problemas físicos, psico psiquiátricos y espirituales",
-      "c. Colaborar para que el paciente y la familia acepten el futuro",
-      "d. Procurar conseguir la mayor calidad de vida para los enfermos"
-    ],
-    answer: 1
-  },
-  {
-    id: 14,
-    text: "cuál no es un causa de sufrimiento del enfermo terminal:",
-    options: [
-      "a. Situaciones psicosociales inadecuadas: Falta de intimidad, Compañía o soledad indeseadas, Separación de la familia",
-      "b. Pensamientos negativos (de culpabilidad, miedo al futuro)",
-      "c. Estado de ánimo deprimido o angustiado",
-      "d. Desear morir solos"
-    ],
-    answer: 3
-  },
-  {
-    id: 15,
-    text: "¿cuáles son las áreas de valoración integral del enfermo en fase terminal?",
-    options: [
-      "a. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
-      "b. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
-      "c. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
-      "d. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno"
-    ],
-    answer: 0
-  },
-  {
-    id: 16,
-    text: "la enfermería paliativa se basa en:",
-    options: [
-      "a. compresión, capacidad de leer y apoyo emocional",
-      "b. compresión, capacidad de escucha y apoyo emocional",
-      "c. compresión, capacidad de escucha y apoyo económico",
-      "d. compresión, capacidad de trabajar y apoyo emocional"
-    ],
-    answer: 1
-  },
-  {
-    id: 17,
-    text: "cuál no es un causa de sufrimiento del enfermo terminal:",
-    options: [
-      "a. Síntomas no controlados",
-      "b. Buen aspecto fisico",
-      "c. No sentirse querido",
-      "d. Dejar asuntos inconclusos"
-    ],
-    answer: 1
-  },
-  {
-    id: 18,
-    text: "Marca la falsa:",
-    options: [
-      "a. El uso del mismo escalón no reporta ningún beneficio",
-      "b. No recomendado el 2º y 3º escalón",
-      "c. El 1º escalón siempre se puede combinar con los otros",
-      "d. codeína en rescate con tramadol"
-    ],
-    answer: 3
-  },
-  {
-    id: 19,
-    text: "cuál no es un causa de sufrimiento del enfermo terminal:",
-    options: [
-      "a. Buen control de síntomas",
-      "b. Efectos no deseados de tratamientos",
-      "c. Pérdida de rol social",
-      "d. Sensación de dependencia"
-    ],
-    answer: 0
-  },
-  {
-    id: 20,
-    text: "cuál no es una Características físicas de la agonía",
-    options: [
-      "a. Retención fecal",
-      "b. Dificultad para ingerir alimentos",
-      "c. Ansiedad",
-      "d. Depresión"
-    ],
-    answer: 2 // Ansiedad / depresión son emocionales, no físicas. Asumimos C.
-  },
-  {
-    id: 21,
-    text: "cuál no corresponde a la valoración funcional",
-    options: [
-      "a. Escala de Barthel (AVD)",
-      "b. Escala de Lawton y Brody (AIVD)",
-      "c. Índice de Norton UPP",
-      "d. Test de Pfeiffer"
-    ],
-    answer: 3 // Pfeiffer es cognitiva
-  },
-  {
-    id: 22,
-    text: "cuál no es un cuidado post-mortem",
-    options: [
-      "a. decúbito supino",
-      "b. cerrar los ojos",
-      "c. atar cadera y tobillos",
-      "d. cerrar boca"
-    ],
-    answer: 2
-  }
-];
+    <!-- Vista del Test -->
+    <div id="test-view" class="flex-1 flex flex-col w-full h-full">
+        <!-- Barra Superior -->
+        <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-10 shadow-md w-full">
+            <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <h1 class="text-lg font-semibold text-gray-200 flex items-center gap-2">
+                    <span>Test de Cuidados Paliativos</span>
+                    <span class="bg-purple-900/50 text-purple-300 text-xs py-1 px-2 rounded-full border border-purple-700/50">Parte 1</span>
+                </h1>
 
-export default function App() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [incorrectAnswers, setIncorrectAnswers] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-
-  const handleOptionClick = (index) => {
-    if (hasAnswered) return; // Prevent multiple clicks
-    
-    setSelectedOption(index);
-    setHasAnswered(true);
-
-    if (index === testQuestions[currentQuestionIndex].answer) {
-      setCorrectAnswers(prev => prev + 1);
-    } else {
-      setIncorrectAnswers(prev => prev + 1);
-    }
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < testQuestions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedOption(null);
-      setHasAnswered(false);
-    } else {
-      setIsFinished(true);
-    }
-  };
-
-  const restartTest = () => {
-    setCurrentQuestionIndex(0);
-    setCorrectAnswers(0);
-    setIncorrectAnswers(0);
-    setSelectedOption(null);
-    setHasAnswered(false);
-    setIsFinished(false);
-  };
-
-  const getOptionStyle = (index) => {
-    if (!hasAnswered) {
-      return "bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-200 cursor-pointer";
-    }
-    
-    const isCorrectOption = index === testQuestions[currentQuestionIndex].answer;
-    const isSelectedOption = index === selectedOption;
-
-    if (isCorrectOption) {
-      return "bg-green-900/50 border-green-500 text-green-100"; // Correct answer styling
-    }
-    if (isSelectedOption && !isCorrectOption) {
-      return "bg-red-900/50 border-red-500 text-red-100"; // Wrong answer styling
-    }
-    
-    // Unselected and incorrect options fade out slightly
-    return "bg-gray-800 border-gray-700 text-gray-500 opacity-50 cursor-default";
-  };
-
-  if (isFinished) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4 font-sans">
-        <div className="bg-gray-800 p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-700">
-          <h1 className="text-3xl font-bold text-white mb-6">¡Test Finalizado!</h1>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center">
-              <span className="text-3xl font-bold text-white mb-1">
-                {Math.round((correctAnswers / testQuestions.length) * 100)}%
-              </span>
-              <span className="text-sm text-gray-400">Puntuación</span>
-            </div>
-            <div className="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center">
-              <CheckCircle className="w-8 h-8 text-green-400 mb-2" />
-              <span className="text-sm text-gray-400">Correctas</span>
-              <span className="text-xl font-bold text-green-400">{correctAnswers}</span>
-            </div>
-            <div className="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center">
-              <XCircle className="w-8 h-8 text-red-400 mb-2" />
-              <span className="text-sm text-gray-400">Incorrectas</span>
-              <span className="text-xl font-bold text-red-400">{incorrectAnswers}</span>
-            </div>
-          </div>
-
-          <button 
-            onClick={restartTest}
-            className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
-          >
-            <RotateCcw className="w-5 h-5" />
-            Volver a intentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const currentQuestion = testQuestions[currentQuestionIndex];
-
-  return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col font-sans">
-      {/* Header / Top Bar */}
-      <header className="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-10 shadow-md">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          
-          <h1 className="text-lg font-semibold text-gray-200">
-            Test de Cuidados Paliativos
-          </h1>
-
-          <div className="flex items-center gap-4 text-sm font-medium">
-            <div className="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-green-400">{correctAnswers}</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
-              <XCircle className="w-4 h-4 text-red-400" />
-              <span className="text-red-400">{incorrectAnswers}</span>
-            </div>
-          </div>
-
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-3xl">
-          
-          {/* Progress Indicator */}
-          <div className="mb-6 flex justify-between items-end">
-            <span className="text-sm font-semibold text-blue-400 tracking-wider uppercase">
-              Pregunta {currentQuestionIndex + 1} de {testQuestions.length}
-            </span>
-            <div className="w-1/2 bg-gray-800 rounded-full h-2.5 border border-gray-700">
-              <div 
-                className="bg-blue-500 h-2.5 rounded-full transition-all duration-300" 
-                style={{ width: `${((currentQuestionIndex + 1) / testQuestions.length) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Question Card */}
-          <div className="bg-gray-800/80 backdrop-blur rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-700 mb-6">
-            <h2 className="text-xl sm:text-2xl font-medium text-white mb-8 leading-relaxed">
-              {currentQuestion.text}
-            </h2>
-
-            <div className="flex flex-col gap-3">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleOptionClick(index)}
-                  disabled={hasAnswered}
-                  className={`w-full text-left p-4 rounded-xl border transition-all duration-200 
-                    ${getOptionStyle(index)}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1 text-sm sm:text-base leading-relaxed">
-                      {option}
+                <div class="flex items-center gap-4 text-sm font-medium">
+                    <div class="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
+                        <!-- Icono Check -->
+                        <svg class="w-4 h-4 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span id="correct-count" class="text-green-400">0</span>
                     </div>
-                    {hasAnswered && index === currentQuestion.answer && (
-                      <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    )}
-                    {hasAnswered && selectedOption === index && index !== currentQuestion.answer && (
-                      <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    )}
-                  </div>
-                </button>
-              ))}
+                    <div class="flex items-center gap-1.5 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
+                        <!-- Icono X -->
+                        <svg class="w-4 h-4 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        <span id="incorrect-count" class="text-red-400">0</span>
+                    </div>
+                </div>
             </div>
-          </div>
+        </header>
 
-          {/* Navigation Button */}
-          <div className="flex justify-end min-h-[3rem]">
-            {hasAnswered && (
-              <button
-                onClick={handleNextQuestion}
-                className="bg-blue-600 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold flex items-center gap-2 transition-colors shadow-lg animate-fade-in-up"
-              >
-                {currentQuestionIndex < testQuestions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+        <!-- Contenido Principal -->
+        <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 w-full">
+            <div class="w-full max-w-3xl">
+                
+                <!-- Indicador de Progreso -->
+                <div class="mb-6 flex justify-between items-end">
+                    <span id="progress-text" class="text-sm font-semibold text-purple-400 tracking-wider uppercase">
+                        Pregunta 1 (de 22)
+                    </span>
+                    <div class="w-1/2 bg-gray-800 rounded-full h-2.5 border border-gray-700">
+                        <div id="progress-bar" class="bg-purple-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
 
-        </div>
-      </main>
-      
-      {/* Footer Disclaimer */}
-      <footer className="text-center p-4 text-xs text-gray-500">
-        <p className="flex justify-center items-center gap-1">
-          <AlertCircle className="w-3 h-3" />
-          Nota: Las respuestas correctas han sido inferidas. El propósito de esta web es formativo.
-        </p>
-      </footer>
+                <!-- Tarjeta de Pregunta -->
+                <div class="bg-gray-800/80 backdrop-blur rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-700 mb-6 w-full">
+                    <h2 id="question-text" class="text-xl sm:text-2xl font-medium text-white mb-8 leading-relaxed">
+                        <!-- Texto de la pregunta -->
+                    </h2>
+
+                    <div id="options-container" class="flex flex-col gap-3">
+                        <!-- Opciones generadas por JS -->
+                    </div>
+                </div>
+
+                <!-- Botón de Navegación -->
+                <div class="flex justify-end min-h-[3rem]">
+                    <button id="next-btn" onclick="handleNextQuestion()" class="hidden bg-purple-600 hover:bg-purple-500 text-white py-3 px-6 rounded-xl font-semibold flex items-center gap-2 transition-colors shadow-lg animate-fade-in-up">
+                        <span id="next-btn-text">Siguiente Pregunta</span>
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+            </div>
+        </main>
+        
+        <!-- Pie de página con aviso -->
+        <footer class="text-center p-4 text-xs text-gray-500">
+            <p class="flex justify-center items-center gap-1">
+                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Nota: Las respuestas correctas han sido inferidas a falta de plantilla. El propósito de esta web es formativo.
+            </p>
+        </footer>
     </div>
-  );
-}
+
+    <!-- Vista de Resultados Finales -->
+    <div id="results-view" class="hidden-view min-h-screen flex flex-col items-center justify-center p-4 w-full h-full">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-700">
+            <h1 class="text-3xl font-bold text-white mb-6">¡Test Finalizado!</h1>
+            <p class="text-gray-400 mb-6">Parte 1 (Preguntas 1 a 22)</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <span id="final-score" class="text-3xl font-bold text-white mb-1">0%</span>
+                    <span class="text-sm text-gray-400">Puntuación</span>
+                </div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <svg class="w-8 h-8 text-green-400 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span class="text-sm text-gray-400">Correctas</span>
+                    <span id="final-correct" class="text-xl font-bold text-green-400">0</span>
+                </div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 flex flex-col items-center justify-center">
+                    <svg class="w-8 h-8 text-red-400 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <span class="text-sm text-gray-400">Incorrectas</span>
+                    <span id="final-incorrect" class="text-xl font-bold text-red-400">0</span>
+                </div>
+            </div>
+
+            <button onclick="restartTest()" class="w-full py-3 px-6 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                Volver a intentar
+            </button>
+        </div>
+    </div>
+
+    <!-- Lógica JavaScript -->
+    <script>
+        const testQuestions = [
+            {
+                id: 1,
+                text: "¿Cuál es el objetivo de la valoración integral del enfermo en fase terminal?",
+                options: [
+                    "a. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
+                    "b. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
+                    "c. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada.",
+                    "d. Establecer un plan de actuación personalizado al individuo y a su situación única y diferenciada."
+                ],
+                answer: 0
+            },
+            {
+                id: 2,
+                text: "¿Cuáles son los objetivos de la enfermería paliativa?",
+                options: [
+                    "a. Conseguir el mínimo confort y bienestar del paciente, Evitar el sufrimiento y Lograr una muerte digna",
+                    "b. Conseguir el máximo confort y bienestar del paciente, Evitar el sufrimiento solo de la familia y Lograr una muerte digna",
+                    "c. Conseguir el máximo confort y bienestar del paciente, Evitar el sufrimiento y Lograr una muerte digna",
+                    "d. Conseguir el máximo confort y bienestar de la familia, Evitar el sufrimiento y Lograr una muerte digna"
+                ],
+                answer: 2
+            },
+            {
+                id: 3,
+                text: "Marca la verdadera",
+                options: [
+                    "a. El uso del mismo escalón reporta ningún beneficio",
+                    "b. Recomendado el 2º y 3º escalón",
+                    "c. El 2º escalón siempre se puede combinar con los otros",
+                    "d. morfina en rescate con parches de fentanilo"
+                ],
+                answer: 3
+            },
+            {
+                id: 4,
+                text: "¿Cuál es una Características físicas de la agonía?",
+                options: [
+                    "a. Orientación",
+                    "b. Trastornos mentales",
+                    "c. Trastornos respiratorios",
+                    "d. No tiene miedo"
+                ],
+                answer: 2
+            },
+            {
+                id: 5,
+                text: "quien dijo: “Dos entes vivos difieren en cuanto que la vida de ellos es distinta y como vivir no es lo mismo para los dos, tampoco morir significa lo mismo”:",
+                options: [
+                    "a. Miguel de Unamuno (1912)",
+                    "b. Pérez Cuesta y Nicuesa (1999)",
+                    "c. L. Mizer",
+                    "d. Ramón Bayés"
+                ],
+                answer: 0
+            },
+            {
+                id: 6,
+                text: "característica de la muerte inminente",
+                options: [
+                    "a. Pupilas dilatadas y fijas, Incapacidad para beber, Pérdida de reflejos, Pulso rápido y débil",
+                    "b. Descenso de la presión craneal, Respiración de Cheyne-Stokes (distrés respiratorio), Respiración ruidosas (estertores de la muerte)",
+                    "c. Pérdida de reflejos, Pulso lento y débil, Descenso de la presión arterial, Respiración de Cheyne-Stokes",
+                    "d. Pupilas dilatadas y fijas, Incapacidad para moverse"
+                ],
+                answer: 0
+            },
+            {
+                id: 7,
+                text: "qué se debe conocer en el duelo:",
+                options: [
+                    "a. El grado de información del familiar",
+                    "b. Su estado emocional",
+                    "c. Apoyo de su familia",
+                    "d. b y c"
+                ],
+                answer: 3
+            },
+            {
+                id: 8,
+                text: "quien dijo “El tiempo que le queda al paciente es un tiempo de vida y no una espera angustiosa ante la muerte”",
+                options: [
+                    "a. Miguel de Unamuno (1912)",
+                    "b. Pérez Cuesta y Nicuesa (1999)",
+                    "c. L. Mizer",
+                    "d. Ramón Bayés"
+                ],
+                answer: 1
+            },
+            {
+                id: 9,
+                text: "cuál es falsa:",
+                options: [
+                    "a. No apoyar al cuidador (preocupaciones)",
+                    "b. Implementar el cuidado domiciliario",
+                    "c. Dar apoyo a la familia después de la muerte",
+                    "d. Ofrecer asesoría y soporte ético y legal"
+                ],
+                answer: 0
+            },
+            {
+                id: 10,
+                text: "¿Cuál no es un elemento básico de los cuidados paliativos?",
+                options: [
+                    "a. Una buena comunicación",
+                    "b. Un control adecuado de sus síntomas",
+                    "c. Empleo de diversas medidas para aliviar o atenuar el sufrimiento",
+                    "d. No dar apoyo a la familia antes de la muerte y durante el proceso del duelo"
+                ],
+                answer: 3
+            },
+            {
+                id: 11,
+                text: "qué tiene que hacer una enfermera según Nightingale",
+                options: [
+                    "a. resolver diversas circunstancia de la vida del enfermo",
+                    "b. buscar los problemas",
+                    "c. aportar conocimiento y habilidades técnicas cómo suplemento de otros profesionales",
+                    "d. cuidar al enfermo y no dejarlo morir"
+                ],
+                answer: 0
+            },
+            {
+                id: 12,
+                text: "cuál no es una característica de la muerte inminente",
+                options: [
+                    "a. Pupilas dilatadas y fijas Incapacidad para moverse Pérdida de reflejos Pulso rápido y débil",
+                    "b. Descenso de la presión arterial Respiración de Cheyne-Stokes (distrés respiratorio) Respiración ruidosas (crepitante de la muerte)",
+                    "c. Pérdida de reflejos Pulso rápido y débil Descenso de la presión arterial Respiración de Cheyne-Stokes",
+                    "d. Pupilas dilatadas y fijas Incapacidad para moverse"
+                ],
+                answer: 1
+            },
+            {
+                id: 13,
+                text: "cuál de las siguientes es una meta principal de bases de los cuidados paliativos",
+                options: [
+                    "a. El dolor y la prevención del sufrimiento",
+                    "b. La identificación precoz y tto. impecables del dolor y de otros problemas físicos, psico psiquiátricos y espirituales",
+                    "c. Colaborar para que el paciente y la familia acepten el futuro",
+                    "d. Procurar conseguir la mayor calidad de vida para los enfermos"
+                ],
+                answer: 1
+            },
+            {
+                id: 14,
+                text: "cuál no es un causa de sufrimiento del enfermo terminal:",
+                options: [
+                    "a. Situaciones psicosociales inadecuadas: Falta de intimidad, Compañía o soledad indeseadas, Separación de la familia",
+                    "b. Pensamientos negativos (de culpabilidad, miedo al futuro)",
+                    "c. Estado de ánimo deprimido o angustiado",
+                    "d. Desear morir solos"
+                ],
+                answer: 3
+            },
+            {
+                id: 15,
+                text: "¿cuáles son las áreas de valoración integral del enfermo en fase terminal?",
+                options: [
+                    "a. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
+                    "b. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
+                    "c. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno",
+                    "d. Necesidades físicas básicas, Necesidades psíquicas básicas, Síntomas físicos, Síntomas psíquicos, Situación y necesidades relacionados con el entorno"
+                ],
+                answer: 0
+            },
+            {
+                id: 16,
+                text: "la enfermería paliativa se basa en:",
+                options: [
+                    "a. compresión, capacidad de leer y apoyo emocional",
+                    "b. compresión, capacidad de escucha y apoyo emocional",
+                    "c. compresión, capacidad de escucha y apoyo económico",
+                    "d. compresión, capacidad de trabajar y apoyo emocional"
+                ],
+                answer: 1
+            },
+            {
+                id: 17,
+                text: "cuál no es un causa de sufrimiento del enfermo terminal:",
+                options: [
+                    "a. Síntomas no controlados",
+                    "b. Buen aspecto fisico",
+                    "c. No sentirse querido",
+                    "d. Dejar asuntos inconclusos"
+                ],
+                answer: 1
+            },
+            {
+                id: 18,
+                text: "Marca la falsa:",
+                options: [
+                    "a. El uso del mismo escalón no reporta ningún beneficio",
+                    "b. No recomendado el 2º y 3º escalón",
+                    "c. El 1º escalón siempre se puede combinar con los otros",
+                    "d. codeína en rescate con tramadol"
+                ],
+                answer: 3
+            },
+            {
+                id: 19,
+                text: "cuál no es un causa de sufrimiento del enfermo terminal:",
+                options: [
+                    "a. Buen control de síntomas",
+                    "b. Efectos no deseados de tratamientos",
+                    "c. Pérdida de rol social",
+                    "d. Sensación de dependencia"
+                ],
+                answer: 0
+            },
+            {
+                id: 20,
+                text: "cuál no es una Características físicas de la agonía",
+                options: [
+                    "a. Retención fecal",
+                    "b. Dificultad para ingerir alimentos",
+                    "c. Ansiedad",
+                    "d. Depresión"
+                ],
+                answer: 2
+            },
+            {
+                id: 21,
+                text: "cuál no corresponde a la valoración funcional",
+                options: [
+                    "a. Escala de Barthel (AVD)",
+                    "b. Escala de Lawton y Brody (AIVD)",
+                    "c. Índice de Norton UPP",
+                    "d. Test de Pfeiffer"
+                ],
+                answer: 3
+            },
+            {
+                id: 22,
+                text: "cuál no es un cuidado post-mortem",
+                options: [
+                    "a. decúbito supino",
+                    "b. cerrar los ojos",
+                    "c. atar cadera y tobillos",
+                    "d. cerrar boca"
+                ],
+                answer: 2
+            }
+        ];
+
+        // Estado de la aplicación
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let hasAnswered = false;
+        let selectedOption = null;
+
+        // SVGs para inyectar
+        const checkSvg = `<svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+        const xSvg = `<svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+
+        // Referencias del DOM
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        const correctCountEl = document.getElementById('correct-count');
+        const incorrectCountEl = document.getElementById('incorrect-count');
+        const nextBtn = document.getElementById('next-btn');
+        const nextBtnText = document.getElementById('next-btn-text');
+        
+        const testView = document.getElementById('test-view');
+        const resultsView = document.getElementById('results-view');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalCorrectEl = document.getElementById('final-correct');
+        const finalIncorrectEl = document.getElementById('final-incorrect');
+
+        // Inicializar
+        function init() {
+            renderQuestion();
+        }
+
+        // Renderizar la pregunta actual
+        function renderQuestion() {
+            const currentQ = testQuestions[currentQuestionIndex];
+            const totalQ = testQuestions.length;
+            const lastQId = testQuestions[totalQ - 1].id;
+
+            // Actualizar textos y progreso
+            questionTextEl.textContent = currentQ.text;
+            progressText.textContent = `Pregunta ${currentQ.id} (de ${lastQId})`;
+            
+            const progressPercent = ((currentQuestionIndex + 1) / totalQ) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // Limpiar opciones
+            optionsContainer.innerHTML = '';
+
+            // Generar botones de opciones
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                
+                // Clases por defecto (estado no respondido)
+                let baseClasses = "w-full text-left p-4 rounded-xl border transition-all duration-200 ";
+                
+                if (!hasAnswered) {
+                    baseClasses += "bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-200 cursor-pointer";
+                } else {
+                    const isCorrect = index === currentQ.answer;
+                    const isSelected = index === selectedOption;
+
+                    if (isCorrect) {
+                        baseClasses += "bg-green-900/50 border-green-500 text-green-100";
+                    } else if (isSelected && !isCorrect) {
+                        baseClasses += "bg-red-900/50 border-red-500 text-red-100";
+                    } else {
+                        baseClasses += "bg-gray-800 border-gray-700 text-gray-500 opacity-50 cursor-default";
+                    }
+                    btn.disabled = true;
+                }
+
+                btn.className = baseClasses;
+                
+                // Evento click
+                if (!hasAnswered) {
+                    btn.onclick = () => handleOptionClick(index);
+                }
+
+                // Contenido interno del botón
+                let innerHtml = `
+                    <div class="flex items-start gap-3">
+                        <div class="flex-1 text-sm sm:text-base leading-relaxed">${option}</div>
+                `;
+
+                // Añadir iconos si ya se ha respondido
+                if (hasAnswered) {
+                    if (index === currentQ.answer) {
+                        innerHtml += checkSvg;
+                    } else if (index === selectedOption) {
+                        innerHtml += xSvg;
+                    }
+                }
+
+                innerHtml += `</div>`;
+                btn.innerHTML = innerHtml;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Lógica del botón siguiente
+            if (hasAnswered) {
+                nextBtn.classList.remove('hidden');
+                nextBtn.classList.add('flex');
+                if (currentQuestionIndex < totalQ - 1) {
+                    nextBtnText.textContent = "Siguiente Pregunta";
+                } else {
+                    nextBtnText.textContent = "Ver Resultados";
+                }
+            } else {
+                nextBtn.classList.add('hidden');
+                nextBtn.classList.remove('flex');
+            }
+        }
+
+        // Manejar click en opción
+        function handleOptionClick(index) {
+            if (hasAnswered) return;
+
+            selectedOption = index;
+            hasAnswered = true;
+
+            if (index === testQuestions[currentQuestionIndex].answer) {
+                correctAnswers++;
+                correctCountEl.textContent = correctAnswers;
+            } else {
+                incorrectAnswers++;
+                incorrectCountEl.textContent = incorrectAnswers;
+            }
+
+            renderQuestion(); // Re-renderizar para mostrar los colores e iconos
+        }
+
+        // Manejar botón siguiente
+        function handleNextQuestion() {
+            if (currentQuestionIndex < testQuestions.length - 1) {
+                currentQuestionIndex++;
+                selectedOption = null;
+                hasAnswered = false;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Mostrar pantalla final
+        function showResults() {
+            testView.classList.add('hidden-view');
+            resultsView.classList.remove('hidden-view');
+
+            const score = Math.round((correctAnswers / testQuestions.length) * 100);
+            finalScoreEl.textContent = `${score}%`;
+            finalCorrectEl.textContent = correctAnswers;
+            finalIncorrectEl.textContent = incorrectAnswers;
+        }
+
+        // Reiniciar test
+        function restartTest() {
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            hasAnswered = false;
+            selectedOption = null;
+
+            correctCountEl.textContent = "0";
+            incorrectCountEl.textContent = "0";
+
+            resultsView.classList.add('hidden-view');
+            testView.classList.remove('hidden-view');
+
+            renderQuestion();
+        }
+
+        // Iniciar la app al cargar
+        init();
+    </script>
+</body>
+</html>
